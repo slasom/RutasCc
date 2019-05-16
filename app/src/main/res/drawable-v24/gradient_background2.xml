@@ -6,10 +6,13 @@
             android:type="linear"
             android:centerX="36%"
             android:startColor="#6119FA70"
-            android:centerColor="#834FF18A"
-            android:endColor="#6119FA70"
+            android:centerColor="#D843F1AC"
+            android:endColor="#27E4AE"
             android:angle="90"/>
+
     </shape>
 
     </item>
+
+
 </selector>
