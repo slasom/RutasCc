@@ -436,16 +436,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      *
      * @param posicion
      * @param recurso
-     * @param distancia CONSULTA PARA COJMJPROBAR CON POSICION
-     *                  <p>
-     *                  select distinct ?nombreRuta (SAMPLE(?lngF) AS ?puntoLng) (SAMPLE(?latF) AS ?puntoLat)
-     *                  where {
-     *                  ?uri a om:RutaPatrimonio.
-     *                  ?uri rdfs:label ?nombreRuta.
-     *                  ?uri om:tienePunto ?puntos.
-     *                  ?puntos geo:lat ?latF.
-     *                  ?puntos geo:long ?lngF.
-     *                  filter (bif:st_distance ( bif:st_point (PUNTOLAT,PUNTOLONG) , bif:st_point (?lngF, ?latF) ) < DISTANCIA)}
+     * @param distancia
+     *
+     * CONSULTA SPARQL
+     *
+     * select distinct ?nombreRuta (SAMPLE(?lngF) AS ?puntoLng) (SAMPLE(?latF) AS ?puntoLat)
+     *  where {
+     *      ?uri a om:RECURSO.
+     *      ?uri rdfs:label ?nombreRuta.
+     *      ?uri om:tienePunto ?puntos.
+     *      ?puntos geo:lat ?latF.
+     *      ?puntos geo:long ?lngF.
+     *      filter (bif:st_distance ( bif:st_point (PUNTOLAT,PUNTOLONG) , bif:st_point (?lngF, ?latF) ) < DISTANCIA)
+     *      }
      */
     private void peticionSparqlRutasCercanas(LatLng posicion, String recurso, String distancia) {
 
@@ -481,6 +484,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * recurso por parametro(RutaPatrimonio, RutaNatural y RutaVerde).
      * <p>
      * Si el resultado es correcto, configurará y cargara el Spinner o Menu Desplegable con las rutas.
+     *
+     * CONSULTA SPARQL
+     *  select ?nombreRuta ?ruta where{
+     *      ?uri a om:RECURSO.
+     *      ?uri rdfs:label ?nombreRuta.
+     *      ?uri schema:line ?ruta.
+     *  }
+     *
      *
      * @param recurso
      * @param ruta
