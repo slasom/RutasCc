@@ -55,7 +55,9 @@ import java.util.TimerTask;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
-    /** Map Utils*/
+    /**
+     * Map Utils
+     */
     private static final String TAG = "Location";
     private GoogleMap mMap;
     private LatLng miPosicion = new LatLng(0, 0);
@@ -66,17 +68,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     //bicycling
     private String travelMode = "walking";
 
-    /** Estructuras para almacenar rutas*/
+    /**
+     * Estructuras para almacenar rutas
+     */
     private List<Ruta> rutasPatrimonio = new ArrayList<>();
     private List<Ruta> rutasNaturales = new ArrayList<>();
     private List<Ruta> rutasVerdes = new ArrayList<>();
 
-    /** Volley Utils*/
+    /**
+     * Volley Utils
+     */
     private JsonObjectRequest jsonObjectRequest;
     private RequestQueue request;
 
 
-    /** Layout Elements*/
+    /**
+     * Layout Elements
+     */
     private ImageButton buttonWalk;
     private ImageButton buttonBike;
     private final static String duration = "0 mins";
@@ -88,12 +96,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private int posicionSpinner;
 
 
-    /** Utils*/
+    /**
+     * Utils
+     */
     private MapsUtil mapsUtil = new MapsUtil();
     private SparqlUtil sparqlUtil = new SparqlUtil();
 
 
-    /** Notification Utils*/
+    /**
+     * Notification Utils
+     */
     private NotificationManager notificationManager;
     private PendingIntent intent;
 
@@ -103,7 +115,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private double RANGE = 0.025; // 25 m
 
 
-    /** Tracking service*/
+    /**
+     * Tracking service
+     */
     private Boolean mLocationPermissionsGranted = false;
     private FusedLocationProviderClient mFusedLocationProviderClient;
 
@@ -116,7 +130,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     /**
      * Método onCreate del Activity.
-     *
+     * <p>
      * En él se inicializan los diferentes elementos de la vista u otras variables y estructuras de
      * la aplicación.
      *
@@ -147,15 +161,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         buttonWalk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (travelMode.equals("bicycling")) {
-                    travelMode = "walking";
-                    //TODO: hacer peticion andando
-                    String url = mapsUtil.getMapsApiDirectionsUrl(lSpinner.get(posicionSpinner), miPosicion, travelMode);
-                    webServiceObtenerRutaGoogle(url);
-                    addMarkers(miPosicion, lSpinner.get(posicionSpinner).getPuntosRuta().get(0));
+                if (mLocationPermissionsGranted) {
+                    if (travelMode.equals("bicycling")) {
+                        travelMode = "walking";
+                        String url = mapsUtil.getMapsApiDirectionsUrl(lSpinner.get(posicionSpinner), miPosicion, travelMode);
+                        webServiceObtenerRutaGoogle(url);
+                        addMarkers(miPosicion, lSpinner.get(posicionSpinner).getPuntosRuta().get(0));
 
-
-                }
+                    }
+                }else
+                    getLocationPermission();
 
             }
         });
@@ -163,15 +178,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         buttonBike.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (travelMode.equals("walking")) {
-                    travelMode = "bicycling";
-                    //TODO: hacer peticion bicicleta
-                    String url = mapsUtil.getMapsApiDirectionsUrl(lSpinner.get(posicionSpinner), miPosicion, travelMode);
-                    webServiceObtenerRutaGoogle(url);
-                    addMarkers(miPosicion, lSpinner.get(posicionSpinner).getPuntosRuta().get(0));
-
-
-                }
+                if (mLocationPermissionsGranted) {
+                    if (travelMode.equals("walking")) {
+                        travelMode = "bicycling";
+                        String url = mapsUtil.getMapsApiDirectionsUrl(lSpinner.get(posicionSpinner), miPosicion, travelMode);
+                        webServiceObtenerRutaGoogle(url);
+                        addMarkers(miPosicion, lSpinner.get(posicionSpinner).getPuntosRuta().get(0));
+                    }
+                }else
+                    getLocationPermission();
             }
         });
 
@@ -270,7 +285,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     /**
      * Método para configurar el Spinner o Menú desplegable donde se encuentran los diferentes tipos de Rutas
      * que se encuentra en OpenData Cáceres.
-     *
+     * <p>
      * En esta aplicación se muestran tres (Rutas Patrimonio, Rutas Naturales y Rutas Verdes)
      */
     private void loadSpinnerTitulo() {
@@ -313,7 +328,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     /**
      * Método de la API de Google que se ejecuta cuando el Mapa esta completamente cargado.
-     *
+     * <p>
      * En el se comprobará si la localización ha sido obtenida y pondrá un punto azul con dicha localización.
      * También se configura para que nos muestre botón que nos mueve hacia la posición del dispositivo.
      *
@@ -338,7 +353,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
 
-
     }
 
 
@@ -346,9 +360,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * Método para obtener la localización del dispositivo.
      * Si obtiene la localización correctamente, enviará las peticiones para obtener las rutas y
      * que no se produzca ningún error posteriormente por falta de recursos.
-     *
+     * <p>
      * También empieza un timer para comprobar cada X tiempo (MILISECONDS_REFRESH) si hay rutas cercanas.
-     *
      */
     private void getDeviceLocation() {
         Log.d(TAG, "getDeviceLocation: getting the devices current location");
@@ -418,25 +431,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     /**
      * Método para realizar la peticion hacia OpenData Caceres, con ella se obtienen las rutas
      * más cercanas dada la posición del dispositivo  y la distancia máxima permitida.
-     *
+     * <p>
      * Si el resultado es correcto, enviará las notificaciones Push indicando dicho evento.
      *
      * @param posicion
      * @param recurso
-     * @param distancia
-     *
-     *
-     *   CONSULTA PARA COJMJPROBAR CON POSICION
-     *
-     *     select distinct ?nombreRuta (SAMPLE(?lngF) AS ?puntoLng) (SAMPLE(?latF) AS ?puntoLat)
-     *     where {
-     *       ?uri a om:RutaPatrimonio.
-     *       ?uri rdfs:label ?nombreRuta.
-     *       ?uri om:tienePunto ?puntos.
-     *       ?puntos geo:lat ?latF.
-     *       ?puntos geo:long ?lngF.
-     *       filter (bif:st_distance ( bif:st_point (PUNTOLAT,PUNTOLONG) , bif:st_point (?lngF, ?latF) ) < DISTANCIA)}
-     *
+     * @param distancia CONSULTA PARA COJMJPROBAR CON POSICION
+     *                  <p>
+     *                  select distinct ?nombreRuta (SAMPLE(?lngF) AS ?puntoLng) (SAMPLE(?latF) AS ?puntoLat)
+     *                  where {
+     *                  ?uri a om:RutaPatrimonio.
+     *                  ?uri rdfs:label ?nombreRuta.
+     *                  ?uri om:tienePunto ?puntos.
+     *                  ?puntos geo:lat ?latF.
+     *                  ?puntos geo:long ?lngF.
+     *                  filter (bif:st_distance ( bif:st_point (PUNTOLAT,PUNTOLONG) , bif:st_point (?lngF, ?latF) ) < DISTANCIA)}
      */
     private void peticionSparqlRutasCercanas(LatLng posicion, String recurso, String distancia) {
 
@@ -470,7 +479,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     /**
      * Método para realizar la peticion hacia OpenData Caceres, con ella se obtienen las rutas dado el
      * recurso por parametro(RutaPatrimonio, RutaNatural y RutaVerde).
-     *
+     * <p>
      * Si el resultado es correcto, configurará y cargara el Spinner o Menu Desplegable con las rutas.
      *
      * @param recurso
@@ -504,7 +513,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     /**
      * Método para configurar el Spinner o Menú desplegable con las rutas obtenidas según su recurso.
-     *
+     * <p>
      * Esta configurado para pintar en el mapa la ruta que se vaya seleccionado.
      * También automaticamente calcula la ruta desde la localización del móvil hacia la ruta. Por
      * defecto la calculará para ir andando.
@@ -550,7 +559,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     /**
      * Método para realizar la petición hacia la API de Google para obtener la ruta entre dos puntos.
-     *
+     * <p>
      * Si es correcto el resultado, será pintado en el mapa incluyendo la duración de la ruta gracias
      * a los métodos de MapUtils.
      *
@@ -603,8 +612,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     /***Configuracion y envio de notificaciones***/
 
     /*
-    * Método para la configuración del envío de las notificaciones Push para todas las versiones de Android.
-    * */
+     * Método para la configuración del envío de las notificaciones Push para todas las versiones de Android.
+     * */
     private void setUpNotification() {
         PackageManager pm = getApplicationContext().getPackageManager();
         Intent intent2 = pm.getLaunchIntentForPackage(getApplicationContext().getPackageName());
@@ -627,6 +636,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     /**
      * Método para enviar una notificación Push con la ruta indicada.
+     *
      * @param rutas
      */
     private void sendNotification(List<String> rutas) {
