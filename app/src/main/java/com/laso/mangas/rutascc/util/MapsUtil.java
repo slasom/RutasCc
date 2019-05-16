@@ -171,6 +171,9 @@ public class MapsUtil {
      * Genera la url con respecto desde la posición del dispositivo y el inicio (primer punto) de la
      * ruta pasada por parámetro
      *
+     * Formato: "https://maps.googleapis.com/maps/api/directions/json?origin="+latitudInicial+","+longitudInicial
+     *                 +"&destination="+latitudFinal+","+longitudFinal&mode="MODO"&key="API-KEY";
+     *
      * @param r
      * @param posicion
      * @param mode

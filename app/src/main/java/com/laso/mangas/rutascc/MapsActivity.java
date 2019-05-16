@@ -578,10 +578,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      */
     private void webServiceObtenerRutaGoogle(String url) {
 
-//        String url="https://maps.googleapis.com/maps/api/directions/json?origin="+latitudInicial+","+longitudInicial
-//                +"&destination="+latitudFinal+","+longitudFinal;
-
-
         jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
